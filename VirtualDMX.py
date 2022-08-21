@@ -1,4 +1,4 @@
-import json
+import json, time, threading
 from threading import Lock
 from stupidArtnet import StupidArtnetServer
 import serial
@@ -138,8 +138,27 @@ def serial_read():
         while d != 0xE7:
             d = serial_read_byte()
 
+last_artnet = 0
+has_artnet = False
+class ArtNetLostMessageThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.exit = False
+    def run(self):
+        global has_artnet
+        while not self.exit:
+            time.sleep(1)
+            if time.time() - last_artnet > 3 and has_artnet: # 3 seconds since last artnet
+                print("ArtNet Connection Lost")
+                has_artnet = False
+
 last_dmx = [0]*512
 def artnet_receive(data):
+    global last_artnet, has_artnet
+    if time.time() - last_artnet > 3: # 3 seconds since last artnet
+        print("ArtNet Connection Established")
+        has_artnet = True
+    last_artnet = time.time()
     if ser is None or not serial_dmx_input:
         return
     if not serial_dmx_on_change:
@@ -175,17 +194,22 @@ def start_artnet_server(config):
         net=config.get("ArtNet Net", 0),
         callback_function=artnet_receive)
 
+artnet_lost_thread = ArtNetLostMessageThread()
+
 def shutdown():
     global artnet_server
     del artnet_server
     if ser:
         ser.close()
+    artnet_lost_thread.exit = True
+    artnet_lost_thread.join()
 
 if __name__ == "__main__":
     try:
         config = load_config()
         serial_init(config)
         start_artnet_server(config)
+        artnet_lost_thread.start()
         print("Ready to recieve artnet and serial commands!")
         serial_read()
     except KeyboardInterrupt:
