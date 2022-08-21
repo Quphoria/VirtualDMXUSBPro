@@ -53,7 +53,6 @@ SERIAL_NUMBER = 0x1337C0DE
 
 def serial_init(config):
     global ser
-    ## idk windows likes \\.\ prefixed to com port paths
     ser = serial.Serial(config.get("COM Port"), config.get("Baud Rate", 115200), timeout=0.5)
 
 serial_send_lock = Lock()
