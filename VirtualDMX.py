@@ -31,7 +31,7 @@ def load_config():
     except Exception as ex:
         print("Error loading config:", ex)
         with open("config.json", "w") as f:
-            json.dump(config, f)
+            json.dump(config, f, indent=4)
         print("Config overwritten")
     return config
 
