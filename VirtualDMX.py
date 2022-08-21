@@ -110,6 +110,8 @@ def handle_serial_message(label, msg):
 def serial_read_byte():
     assert ser is not None, "Serial port uninitialized"
     while True:
+        # I have a timeout to KeyboardInterrupt exceptions still work
+        # So you can press Ctrl-C to exit program
         try:
             d = ser.read(1)
             if d:
