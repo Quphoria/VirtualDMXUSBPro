@@ -149,14 +149,14 @@ class ArtNetLostMessageThread(threading.Thread):
         global has_artnet
         while not self.exit:
             time.sleep(1)
-            if time.time() - last_artnet > 3 and has_artnet: # 3 seconds since last artnet
+            if has_artnet and time.time() - last_artnet > 3: # 3 seconds since last artnet
                 print("ArtNet Connection Lost")
                 has_artnet = False
 
 last_dmx = [0]*512
 def artnet_receive(data):
     global last_artnet, has_artnet
-    if time.time() - last_artnet > 3: # 3 seconds since last artnet
+    if not has_artnet:
         print("ArtNet Connection Established")
         has_artnet = True
     last_artnet = time.time()
