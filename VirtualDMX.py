@@ -191,7 +191,7 @@ def start_artnet_server(config):
     artnet_server = StupidArtnetServer()
     artnet_server.register_listener(
         universe=config.get("ArtNet Universe", 0),
-        sub=config.get("ArtNet Subnet"),
+        sub=config.get("ArtNet Subnet", 0),
         net=config.get("ArtNet Net", 0),
         callback_function=artnet_receive)
 
