@@ -208,6 +208,8 @@ def shutdown():
 if __name__ == "__main__":
     try:
         config = load_config()
+        print(f'Serial Port: {config.get("COM Port")}, Baud Rate: {config.get("Baud Rate", 115200)}')
+        print(f'ArtNet Universe: {config.get("ArtNet Universe", 0)}, Subnet: {config.get("ArtNet Universe", 0)}, Net: {config.get("ArtNet Net", 0)}')
         serial_init(config)
         start_artnet_server(config)
         artnet_lost_thread.start()
